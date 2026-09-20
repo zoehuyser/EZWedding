@@ -44,9 +44,10 @@
         }
     </script>
     <style>
+        /* Custom scrollbar styling for webkit browsers */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
@@ -59,6 +60,16 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #d4af37;
         }
+        
+        /* Smooth horizontal scrolling for mobile navigation */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         @media print {
             .no-print {
                 display: none !important;
@@ -72,41 +83,40 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
+            .page-break {
+                page-break-before: always;
+            }
         }
     </style>
 </head>
 <body class="h-full flex flex-col font-sans text-slate-800 bg-slate-50 antialiased selection:bg-blush-200 selection:text-slate-900 custom-scrollbar">
 
     <!-- Top Navigation Header -->
-    <header class="bg-white/95 backdrop-blur border-b border-blush-200 sticky top-0 z-40 no-print shadow-xs">
+    <header class="bg-white/95 backdrop-blur border-b border-blush-200 sticky top-0 z-50 no-print shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
-                <div class="flex items-center space-x-3">
-                    <!-- Mobile Hamburger Button -->
-                    <button id="mobileMenuBtn" onclick="toggleMobileNav(true)" class="md:hidden p-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Open Navigation Menu">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
-
+                <div class="flex items-center space-x-2.5 sm:space-x-3">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blush-100 border border-gold-300 flex items-center justify-center text-gold-500 shadow-inner shrink-0">
                         <i class="fa-solid font-bold fa-heart text-sm sm:text-lg text-blush-500"></i>
                     </div>
                     <div>
                         <h1 class="font-serif text-lg sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-1.5 sm:gap-2">
                             Forever & Always
-                            <span class="text-[10px] sm:text-xs font-sans font-semibold tracking-wider text-gold-600 uppercase bg-gold-300/20 px-1.5 py-0.5 rounded-full border border-gold-400/30">ZA</span>
+                            <span class="text-[10px] sm:text-xs font-sans font-semibold tracking-wider text-gold-600 uppercase bg-gold-300/20 px-1.5 sm:px-2 py-0.5 rounded-full border border-gold-400/30">ZA Edition</span>
                         </h1>
                         <p class="text-[10px] sm:text-xs text-slate-500 hidden sm:block">South African Wedding Planner</p>
                     </div>
                 </div>
 
+                <!-- Header Actions -->
                 <div class="flex items-center space-x-1.5 sm:space-x-3">
                     <button onclick="exportData()" title="Backup Planner Data" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center space-x-1.5">
                         <i class="fa-solid fa-download"></i>
-                        <span class="hidden md:inline">Export</span>
+                        <span class="hidden sm:inline">Export</span>
                     </button>
                     <label title="Restore Planner Data" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer transition-colors flex items-center space-x-1.5">
                         <i class="fa-solid fa-upload"></i>
-                        <span class="hidden md:inline">Import</span>
+                        <span class="hidden sm:inline">Import</span>
                         <input type="file" id="importFileInput" onchange="importData(event)" class="hidden" accept=".json">
                     </label>
                     <button onclick="window.print()" title="Print Summary" class="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-gold-600 bg-champagne border border-gold-300/60 hover:bg-gold-300/20 rounded-lg transition-colors flex items-center space-x-1.5">
@@ -118,95 +128,83 @@
         </div>
     </header>
 
-    <!-- Mobile Navigation Overlay Backdrop -->
-    <div id="navBackdrop" onclick="toggleMobileNav(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden md:hidden transition-opacity"></div>
-
     <!-- Main Container -->
-    <div class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col md:flex-row gap-6">
+    <div class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col md:flex-row gap-4 sm:gap-6">
 
-        <!-- Off-Canvas Drawer (Mobile) / Sidebar (Desktop) -->
-        <aside id="mobileNav" class="fixed inset-y-0 left-0 z-50 w-72 bg-white transform -translate-x-full transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:w-64 shrink-0 no-print flex flex-col border-r md:border-r-0 border-slate-200 shadow-2xl md:shadow-none">
-            <!-- Drawer Header -->
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between md:hidden">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-heart text-blush-500"></i>
-                    <span class="font-serif font-bold text-lg text-slate-900">Navigation</span>
-                </div>
-                <button onclick="toggleMobileNav(false)" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none" aria-label="Close Navigation Menu">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="p-3 md:p-0 md:sticky md:top-24 space-y-1 overflow-y-auto max-h-[calc(100vh-5rem)] custom-scrollbar">
-                <nav id="sidebarNav" class="space-y-1 text-sm font-medium">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-blush-600 bg-blush-50 font-semibold shadow-xs">
-                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                        <span class="truncate">Dashboard</span>
+        <!-- Responsive Sidebar / Mobile Horizontal Navigation -->
+        <aside class="w-full md:w-64 shrink-0 no-print">
+            <div class="bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs p-2 sm:p-3 md:sticky md:top-24 space-y-1">
+                
+                <!-- Mobile Navigation Scroll Container -->
+                <nav id="sidebarNav" class="flex md:flex-col overflow-x-auto no-scrollbar gap-1 text-xs sm:text-sm font-medium pb-1 md:pb-0">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-blush-600 bg-blush-50 font-semibold shadow-xs">
+                        <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                        <span>Dashboard</span>
                     </button>
-                    <button onclick="switchTab('details')" id="nav-details" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-heart w-5 text-center"></i>
-                        <span class="truncate">Wedding Details</span>
+                    <button onclick="switchTab('details')" id="nav-details" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-heart w-4 text-center"></i>
+                        <span>Details</span>
                     </button>
-                    <button onclick="switchTab('budget')" id="nav-budget" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-coins w-5 text-center"></i>
-                        <span class="truncate">Master Budget (R)</span>
+                    <button onclick="switchTab('budget')" id="nav-budget" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-coins w-4 text-center"></i>
+                        <span>Budget (R)</span>
                     </button>
-                    <button onclick="switchTab('guests')" id="nav-guests" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-users w-5 text-center"></i>
-                        <span class="truncate">Guest List Tracker</span>
+                    <button onclick="switchTab('guests')" id="nav-guests" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-users w-4 text-center"></i>
+                        <span>Guest List</span>
                     </button>
-                    <button onclick="switchTab('bridal-party')" id="nav-bridal-party" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-user-group w-5 text-center"></i>
-                        <span class="truncate">Bridal Party</span>
+                    <button onclick="switchTab('bridal-party')" id="nav-bridal-party" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-user-group w-4 text-center"></i>
+                        <span>Bridal Party</span>
                     </button>
-                    <button onclick="switchTab('venues')" id="nav-venues" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-building-columns w-5 text-center"></i>
-                        <span class="truncate">Venues Checklist</span>
+                    <button onclick="switchTab('venues')" id="nav-venues" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-building-columns w-4 text-center"></i>
+                        <span>Venues</span>
                     </button>
-                    <button onclick="switchTab('vendors')" id="nav-vendors" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-address-book w-5 text-center"></i>
-                        <span class="truncate">Vendor Directory</span>
+                    <button onclick="switchTab('vendors')" id="nav-vendors" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-address-book w-4 text-center"></i>
+                        <span>Vendors</span>
                     </button>
-                    <button onclick="switchTab('attire')" id="nav-attire" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-vest-patches w-5 text-center"></i>
-                        <span class="truncate">Wedding Attire</span>
+                    <button onclick="switchTab('attire')" id="nav-attire" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-vest-patches w-4 text-center"></i>
+                        <span>Attire</span>
                     </button>
-                    <button onclick="switchTab('ceremony-reception')" id="nav-ceremony-reception" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-church w-5 text-center"></i>
-                        <span class="truncate">Ceremony & Reception</span>
+                    <button onclick="switchTab('ceremony-reception')" id="nav-ceremony-reception" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-church w-4 text-center"></i>
+                        <span>Ceremony</span>
                     </button>
-                    <button onclick="switchTab('menu-cake')" id="nav-menu-cake" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-utensils w-5 text-center"></i>
-                        <span class="truncate">Menu & Cake</span>
+                    <button onclick="switchTab('menu-cake')" id="nav-menu-cake" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-utensils w-4 text-center"></i>
+                        <span>Menu & Cake</span>
                     </button>
-                    <button onclick="switchTab('flowers')" id="nav-flowers" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-spa w-5 text-center"></i>
-                        <span class="truncate">Flowers & Decor</span>
+                    <button onclick="switchTab('flowers')" id="nav-flowers" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-spa w-4 text-center"></i>
+                        <span>Flowers</span>
                     </button>
-                    <button onclick="switchTab('seating')" id="nav-seating" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-chair w-5 text-center"></i>
-                        <span class="truncate">Seating Plan</span>
+                    <button onclick="switchTab('seating')" id="nav-seating" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-chair w-4 text-center"></i>
+                        <span>Seating</span>
                     </button>
-                    <button onclick="switchTab('timeline')" id="nav-timeline" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-clock w-5 text-center"></i>
-                        <span class="truncate">Day Timeline</span>
+                    <button onclick="switchTab('timeline')" id="nav-timeline" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-clock w-4 text-center"></i>
+                        <span>Timeline</span>
                     </button>
-                    <button onclick="switchTab('emergency-kit')" id="nav-emergency-kit" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-kit-medical w-5 text-center"></i>
-                        <span class="truncate">Emergency Kit</span>
+                    <button onclick="switchTab('emergency-kit')" id="nav-emergency-kit" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-kit-medical w-4 text-center"></i>
+                        <span>Emergency Kit</span>
                     </button>
-                    <button onclick="switchTab('honeymoon')" id="nav-honeymoon" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-plane-departure w-5 text-center"></i>
-                        <span class="truncate">Honeymoon Planner</span>
+                    <button onclick="switchTab('honeymoon')" id="nav-honeymoon" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-plane-departure w-4 text-center"></i>
+                        <span>Honeymoon</span>
                     </button>
-                    <button onclick="switchTab('countdown-checklist')" id="nav-countdown-checklist" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-calendar-check w-5 text-center"></i>
-                        <span class="truncate">12-Month Checklist</span>
+                    <button onclick="switchTab('countdown-checklist')" id="nav-countdown-checklist" class="whitespace-nowrap flex-1 md:w-full flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 px-3 py-2 rounded-lg sm:rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-calendar-check w-4 text-center"></i>
+                        <span>Checklist</span>
                     </button>
                 </nav>
 
-                <!-- Global Budget Widget -->
-                <div class="mt-3 pt-3 border-t border-slate-100">
+                <!-- Global Budget Summary widget -->
+                <div class="hidden md:block mt-3 pt-3 border-t border-slate-100">
                     <div class="rounded-xl bg-blush-50 border border-blush-100 p-3">
                         <div class="flex items-center gap-2 mb-2">
                             <i class="fa-solid fa-coins text-blush-500"></i>
@@ -223,37 +221,38 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </aside>
 
-        <!-- Main Viewport -->
+        <!-- Main Content Area -->
         <main class="flex-1 min-w-0 print-full-width">
 
-            <!-- DASHBOARD -->
+            <!-- 1. DASHBOARD OVERVIEW -->
             <section id="sec-dashboard" class="tab-content space-y-4 sm:space-y-6">
                 <div class="relative rounded-2xl bg-gradient-to-r from-blush-500 via-blush-400 to-gold-400 p-5 sm:p-8 text-white shadow-lg overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-white/10 blur-xl"></div>
+                    <div class="absolute -right-10 -bottom-10 w-36 h-36 sm:w-48 sm:h-48 rounded-full bg-white/10 blur-xl"></div>
                     <div class="relative z-10">
-                        <span class="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-gold-100 bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur">Wedding Countdown</span>
+                        <span class="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-gold-100 bg-white/20 px-2.5 py-1 rounded-full backdrop-blur">Wedding Countdown</span>
                         <h2 class="font-serif text-2xl sm:text-4xl font-bold mt-2" id="dashTitleCouple">Bride & Groom</h2>
                         <p class="text-white/90 text-xs sm:text-sm mt-1" id="dashSubDate">Set your date in Wedding Details to activate timer</p>
                         
                         <div class="grid grid-cols-4 gap-1.5 sm:gap-4 mt-4 sm:mt-6 max-w-lg text-center">
-                            <div class="bg-white/20 backdrop-blur rounded-xl p-2 sm:p-3 border border-white/20">
+                            <div class="bg-white/20 backdrop-blur rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20">
                                 <span class="block font-serif text-xl sm:text-3xl font-bold" id="cdDays">00</span>
-                                <span class="text-[10px] sm:text-xs uppercase tracking-wider text-white/80">Days</span>
+                                <span class="text-[9px] sm:text-xs uppercase tracking-wider text-white/80">Days</span>
                             </div>
-                            <div class="bg-white/20 backdrop-blur rounded-xl p-2 sm:p-3 border border-white/20">
+                            <div class="bg-white/20 backdrop-blur rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20">
                                 <span class="block font-serif text-xl sm:text-3xl font-bold" id="cdHours">00</span>
-                                <span class="text-[10px] sm:text-xs uppercase tracking-wider text-white/80">Hours</span>
+                                <span class="text-[9px] sm:text-xs uppercase tracking-wider text-white/80">Hours</span>
                             </div>
-                            <div class="bg-white/20 backdrop-blur rounded-xl p-2 sm:p-3 border border-white/20">
+                            <div class="bg-white/20 backdrop-blur rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20">
                                 <span class="block font-serif text-xl sm:text-3xl font-bold" id="cdMins">00</span>
-                                <span class="text-[10px] sm:text-xs uppercase tracking-wider text-white/80">Mins</span>
+                                <span class="text-[9px] sm:text-xs uppercase tracking-wider text-white/80">Mins</span>
                             </div>
-                            <div class="bg-white/20 backdrop-blur rounded-xl p-2 sm:p-3 border border-white/20">
+                            <div class="bg-white/20 backdrop-blur rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20">
                                 <span class="block font-serif text-xl sm:text-3xl font-bold" id="cdSecs">00</span>
-                                <span class="text-[10px] sm:text-xs uppercase tracking-wider text-white/80">Secs</span>
+                                <span class="text-[9px] sm:text-xs uppercase tracking-wider text-white/80">Secs</span>
                             </div>
                         </div>
                     </div>
@@ -270,13 +269,13 @@
                                 <i class="fa-solid fa-coins"></i>
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 text-xs space-y-1">
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-xs space-y-1">
                             <div class="flex justify-between text-slate-600">
-                                <span>Budget Target:</span>
+                                <span>Target:</span>
                                 <span class="font-semibold" id="dashBudgetedTotal">R 0.00</span>
                             </div>
                             <div class="flex justify-between text-slate-600">
-                                <span>Remaining Balance:</span>
+                                <span>Remaining:</span>
                                 <span class="font-semibold text-emerald-600" id="dashBalance">R 0.00</span>
                             </div>
                         </div>
@@ -292,7 +291,7 @@
                                 <i class="fa-solid fa-user-check"></i>
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 text-xs flex justify-between text-slate-600">
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-xs flex justify-between text-slate-600">
                             <span>Pending: <strong class="text-amber-600" id="dashPendingGuests">0</strong></span>
                             <span>Declined: <strong class="text-rose-600" id="dashDeclinedGuests">0</strong></span>
                         </div>
@@ -308,7 +307,7 @@
                                 <i class="fa-solid fa-list-check"></i>
                             </div>
                         </div>
-                        <div class="mt-4 space-y-1">
+                        <div class="mt-3 space-y-1">
                             <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                                 <div id="dashProgressBar" class="bg-blush-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                             </div>
@@ -316,312 +315,1479 @@
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- WEDDING DETAILS -->
-            <section id="sec-details" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Wedding Details</h2>
-                    <p class="text-xs text-slate-500 mb-6">Configure couple names, wedding date, target budget, and primary contacts.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-gold-500"></i> Quick Planner Notes
+                        </h3>
+                        <textarea id="quickNotes" oninput="saveData()" placeholder="Write any important thoughts, venue notes, or reminders here..." class="w-full h-32 sm:h-40 p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-300 focus:border-blush-400 text-sm outline-none resize-none custom-scrollbar"></textarea>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs flex flex-col justify-between">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Partner 1 Name</label>
-                            <input type="text" id="partner1" class="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:ring-2 focus:ring-blush-400 outline-none" placeholder="e.g. Sarah">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles text-blush-500"></i> Quick Actions
+                            </h3>
+                            <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+                                <button onclick="switchTab('budget')" class="p-2.5 sm:p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
+                                    <i class="fa-solid fa-plus text-blush-500 text-sm sm:text-base"></i> Add Expense
+                                </button>
+                                <button onclick="switchTab('guests')" class="p-2.5 sm:p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
+                                    <i class="fa-solid fa-user-plus text-blush-500 text-sm sm:text-base"></i> Add RSVP Guest
+                                </button>
+                                <button onclick="switchTab('seating')" class="p-2.5 sm:p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
+                                    <i class="fa-solid fa-chair text-blush-500 text-sm sm:text-base"></i> Seating Plan
+                                </button>
+                                <button onclick="switchTab('timeline')" class="p-2.5 sm:p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
+                                    <i class="fa-solid fa-clock text-blush-500 text-sm sm:text-base"></i> Timeline
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Partner 2 Name</label>
-                            <input type="text" id="partner2" class="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:ring-2 focus:ring-blush-400 outline-none" placeholder="e.g. David">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Wedding Date</label>
-                            <input type="date" id="weddingDate" class="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:ring-2 focus:ring-blush-400 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Target Budget (R)</label>
-                            <input type="number" id="targetBudget" class="w-full rounded-xl border border-slate-200 p-2.5 text-sm focus:ring-2 focus:ring-blush-400 outline-none" placeholder="250000">
+                        <div class="mt-4 p-3 bg-champagne rounded-xl border border-gold-300/40 text-xs text-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-gold-500 text-base shrink-0"></i>
+                            <span><strong>Pro Tip:</strong> Keep all quotations, South African marriage officer info, and vendor receipts saved in your physical binder or digital drive.</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- MASTER BUDGET -->
-            <section id="sec-budget" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">Master Budget Planner (R)</h2>
-                            <p class="text-xs text-slate-500">Track and manage estimated versus actual wedding costs.</p>
+            <!-- 2. WEDDING DETAILS -->
+            <section id="sec-details" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-3 sm:pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">1. Wedding Details</h2>
+                        <p class="text-xs text-slate-500 mt-1">Key information regarding the couple and event schedule</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <h3 class="text-xs sm:text-sm font-semibold text-gold-600 tracking-wider uppercase border-l-2 border-gold-400 pl-2">Couple Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Groom's Full Name</label>
+                                <input type="text" id="detailsGroom" oninput="saveData()" placeholder="e.g. Johan van der Merwe" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Bride's Full Name</label>
+                                <input type="text" id="detailsBride" oninput="saveData()" placeholder="e.g. Thandiwe Nkosi" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
                         </div>
-                        <button onclick="addBudgetItem()" class="px-3 py-2 bg-blush-500 text-white rounded-xl text-xs font-semibold hover:bg-blush-600 transition-colors flex items-center gap-1.5">
-                            <i class="fa-solid fa-plus"></i> Add Expense
+
+                        <h3 class="text-xs sm:text-sm font-semibold text-gold-600 tracking-wider uppercase border-l-2 border-gold-400 pl-2">Wedding Details</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Wedding Date</label>
+                                <input type="date" id="detailsDate" onchange="saveData()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Ceremony Time</label>
+                                <input type="time" id="detailsCeremonyTime" oninput="saveData()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Reception Time</label>
+                                <input type="time" id="detailsReceptionTime" oninput="saveData()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Wedding Colours / Theme</label>
+                                <input type="text" id="detailsColours" oninput="saveData()" placeholder="e.g. Sage Green, Blush Pink & Gold" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Estimated Guest Count</label>
+                                <input type="number" id="detailsEstGuests" oninput="saveData()" placeholder="120" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Total Target Budget (R)</label>
+                                <input type="number" id="detailsTargetBudget" oninput="saveData()" placeholder="150000" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. MASTER BUDGET PLANNER -->
+            <section id="sec-budget" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">2. Master Budget Planner</h2>
+                            <p class="text-xs text-slate-500 mt-1">Track budgeted costs, actual vendor quotes, and payments in ZAR (R)</p>
+                        </div>
+                        <button onclick="addBudgetRow()" class="px-3.5 py-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
+                            <i class="fa-solid fa-plus"></i> Add Custom Expense
                         </button>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm">
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
+                        <div class="bg-blush-50 border border-blush-100 rounded-xl p-3 sm:p-4">
+                            <span class="text-[10px] sm:text-xs font-semibold text-blush-700 block">Target Budget</span>
+                            <span class="text-sm sm:text-lg font-bold text-slate-900 mt-1 block" id="bgTotalBudget">R 0.00</span>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4">
+                            <span class="text-[10px] sm:text-xs font-semibold text-slate-500 block">Category Budgeted</span>
+                            <span class="text-sm sm:text-lg font-bold text-slate-900 mt-1 block" id="bgSumBudgeted">R 0.00</span>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4">
+                            <span class="text-[10px] sm:text-xs font-semibold text-amber-700 block">Total Actual Cost</span>
+                            <span class="text-sm sm:text-lg font-bold text-amber-900 mt-1 block" id="bgSumActual">R 0.00</span>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
+                            <span class="text-[10px] sm:text-xs font-semibold text-emerald-700 block">Total Paid</span>
+                            <span class="text-sm sm:text-lg font-bold text-emerald-900 mt-1 block" id="bgSumPaid">R 0.00</span>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 sm:p-4 col-span-2 sm:col-span-1">
+                            <span class="text-[10px] sm:text-xs font-semibold text-rose-700 block">Budget Remaining</span>
+                            <span class="text-sm sm:text-lg font-bold text-rose-900 mt-1 block" id="bgSumBalance">R 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 custom-scrollbar">
+                        <table class="w-full text-left text-sm min-w-[600px]">
                             <thead>
-                                <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-                                    <th class="py-3 px-2">Category</th>
-                                    <th class="py-3 px-2">Estimated (R)</th>
-                                    <th class="py-3 px-2">Actual (R)</th>
-                                    <th class="py-3 px-2">Status</th>
-                                    <th class="py-3 px-2 text-right">Action</th>
+                                <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
+                                    <th class="p-3 rounded-l-xl">Category</th>
+                                    <th class="p-3">Budgeted (R)</th>
+                                    <th class="p-3">Actual Cost (R)</th>
+                                    <th class="p-3">Paid (R)</th>
+                                    <th class="p-3">Balance (R)</th>
+                                    <th class="p-3 rounded-r-xl w-12 no-print"></th>
                                 </tr>
                             </thead>
                             <tbody id="budgetTableBody" class="divide-y divide-slate-100">
-                                <tr>
-                                    <td class="py-3 px-2 font-medium">Venue Rental</td>
-                                    <td class="py-3 px-2">45 000.00</td>
-                                    <td class="py-3 px-2">42 000.00</td>
-                                    <td class="py-3 px-2"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700 font-medium">Paid</span></td>
-                                    <td class="py-3 px-2 text-right"><button class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button></td>
-                                </tr>
+                                <!-- Dynamic Rows -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- GUESTS -->
+            <!-- 4. GUEST LIST PLANNER -->
             <section id="sec-guests" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
-                            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">Guest List Tracker</h2>
-                            <p class="text-xs text-slate-500">Manage RSVPs, table assignments, and meal choices.</p>
+                            <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">4. Guest List Planner</h2>
+                            <p class="text-xs text-slate-500 mt-1">Manage guest invitations, plus-ones, dietary requirements, and RSVPs</p>
                         </div>
-                        <button onclick="addGuestItem()" class="px-3 py-2 bg-blush-500 text-white rounded-xl text-xs font-semibold hover:bg-blush-600 transition-colors flex items-center gap-1.5">
+                        <button onclick="addGuestRow()" class="px-3.5 py-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
                             <i class="fa-solid fa-user-plus"></i> Add Guest
                         </button>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm">
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center">
+                            <span class="text-[10px] sm:text-xs font-semibold text-slate-500">Invited</span>
+                            <span class="block text-lg sm:text-xl font-bold text-slate-800 mt-0.5" id="gStatInvited">0</span>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 sm:p-3 text-center">
+                            <span class="text-[10px] sm:text-xs font-semibold text-emerald-700">Accepted</span>
+                            <span class="block text-lg sm:text-xl font-bold text-emerald-800 mt-0.5" id="gStatAccepted">0</span>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-2.5 sm:p-3 text-center">
+                            <span class="text-[10px] sm:text-xs font-semibold text-rose-700">Declined</span>
+                            <span class="block text-lg sm:text-xl font-bold text-rose-800 mt-0.5" id="gStatDeclined">0</span>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 sm:p-3 text-center">
+                            <span class="text-[10px] sm:text-xs font-semibold text-amber-700">Pending</span>
+                            <span class="block text-lg sm:text-xl font-bold text-amber-800 mt-0.5" id="gStatPending">0</span>
+                        </div>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 sm:p-3 text-center">
+                            <span class="text-[10px] sm:text-xs font-semibold text-purple-700">Children</span>
+                            <span class="block text-lg sm:text-xl font-bold text-purple-800 mt-0.5" id="gStatChildren">0</span>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 sm:p-3 text-center">
+                            <span class="text-[10px] sm:text-xs font-semibold text-blue-700">Total</span>
+                            <span class="block text-lg sm:text-xl font-bold text-blue-800 mt-0.5" id="gStatTotal">0</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 custom-scrollbar">
+                        <table class="w-full text-left text-sm min-w-[700px]">
                             <thead>
-                                <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-                                    <th class="py-3 px-2">Guest Name</th>
-                                    <th class="py-3 px-2">RSVP Status</th>
-                                    <th class="py-3 px-2">Dietary Requirements</th>
-                                    <th class="py-3 px-2">Table</th>
-                                    <th class="py-3 px-2 text-right">Action</th>
+                                <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
+                                    <th class="p-3 rounded-l-xl">Guest Name</th>
+                                    <th class="p-3">Category</th>
+                                    <th class="p-3">Plus One?</th>
+                                    <th class="p-3">Invite Sent</th>
+                                    <th class="p-3">RSVP Status</th>
+                                    <th class="p-3">Dietary Requirements</th>
+                                    <th class="p-3 text-center">Child?</th>
+                                    <th class="p-3 rounded-r-xl w-12 no-print"></th>
                                 </tr>
                             </thead>
                             <tbody id="guestTableBody" class="divide-y divide-slate-100">
-                                <tr>
-                                    <td class="py-3 px-2 font-medium">John Smith</td>
-                                    <td class="py-3 px-2"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700 font-medium">Attending</span></td>
-                                    <td class="py-3 px-2">Vegetarian</td>
-                                    <td class="py-3 px-2">Table 1</td>
-                                    <td class="py-3 px-2 text-right"><button class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button></td>
-                                </tr>
+                                <!-- Dynamic Guest Rows -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- BRIDAL PARTY -->
+            <!-- 5. BRIDAL PARTY -->
             <section id="sec-bridal-party" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Bridal Party</h2>
-                    <p class="text-xs text-slate-500 mb-6">Keep contact notes and attire details organized for your wedding party.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
-                            <span class="text-[10px] uppercase font-bold tracking-wider text-blush-600">Maid of Honor</span>
-                            <h3 class="font-semibold text-slate-900 mt-1">Emma Watson</h3>
-                            <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-phone mr-1"></i> +27 82 123 4567</p>
-                        </div>
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
-                            <span class="text-[10px] uppercase font-bold tracking-wider text-gold-600">Best Man</span>
-                            <h3 class="font-semibold text-slate-900 mt-1">Liam Johnson</h3>
-                            <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-phone mr-1"></i> +27 83 987 6543</p>
-                        </div>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">5. Bridal Party</h2>
+                        <p class="text-xs text-slate-500 mt-1">Keep track of your crew, attire sizes, and assigned responsibilities</p>
                     </div>
-                </div>
-            </section>
 
-            <!-- VENUES CHECKLIST -->
-            <section id="sec-venues" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Venues Checklist</h2>
-                    <p class="text-xs text-slate-500 mb-4">Compare venue options, site visit notes, and deposit status.</p>
-                    <div class="space-y-3">
-                        <div class="p-4 border border-slate-200 rounded-xl flex items-center justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-blush-600">Bridesmaids</h3>
+                            <button onclick="addBridalMember('bridesmaids')" class="px-3 py-1.5 bg-blush-100 text-blush-700 hover:bg-blush-200 rounded-lg text-xs font-semibold transition">
+                                <i class="fa-solid fa-plus"></i> Add Bridesmaid
+                            </button>
+                        </div>
+                        <div id="bridesmaidsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-slate-100">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-gold-600">Groomsmen</h3>
+                            <button onclick="addBridalMember('groomsmen')" class="px-3 py-1.5 bg-gold-300/20 text-gold-700 hover:bg-gold-300/30 rounded-lg text-xs font-semibold transition">
+                                <i class="fa-solid fa-plus"></i> Add Groomsman
+                            </button>
+                        </div>
+                        <div id="groomsmenContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-slate-100">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-800">Key Wedding Roles</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <h3 class="font-semibold text-slate-900">Winelands Estate</h3>
-                                <p class="text-xs text-slate-500">Stellenbosch, Western Cape • Capacity: 150 guests</p>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Maid of Honour</label>
+                                <input type="text" id="roleMoh" oninput="saveData()" placeholder="Name & Contact" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
                             </div>
-                            <span class="px-2.5 py-1 text-xs rounded-full bg-gold-300/20 text-gold-600 font-semibold border border-gold-400/30">Shortlisted</span>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Best Man</label>
+                                <input type="text" id="roleBestMan" oninput="saveData()" placeholder="Name & Contact" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Flower Girl</label>
+                                <input type="text" id="roleFlowerGirl" oninput="saveData()" placeholder="Name" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Ring Bearer</label>
+                                <input type="text" id="roleRingBearer" oninput="saveData()" placeholder="Name" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Ushers</label>
+                                <input type="text" id="roleUshers" oninput="saveData()" placeholder="Names" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Master of Ceremonies (MC)</label>
+                                <input type="text" id="roleMc" oninput="saveData()" placeholder="Name & Contact" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- VENDOR DIRECTORY -->
+            <!-- 6. VENUE CHECKLIST -->
+            <section id="sec-venues" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">6. Venue Checklist</h2>
+                        <p class="text-xs text-slate-500 mt-1">Ceremony and reception venue contact info and essential task confirmations</p>
+                    </div>
+
+                    <div class="p-4 sm:p-5 border border-slate-200 rounded-xl space-y-4 bg-slate-50/50">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-church text-blush-500"></i> Ceremony Venue
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Venue Name</label>
+                                <input type="text" id="vCeremonyName" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Address</label>
+                                <input type="text" id="vCeremonyAddress" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Contact Person</label>
+                                <input type="text" id="vCeremonyContactPerson" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Contact Phone/Email</label>
+                                <input type="text" id="vCeremonyPhone" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-2">
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vCeremonyBooked" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Booked</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vCeremonyDeposit" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Deposit Paid</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vCeremonyFinalPay" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Final Payment Made</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vCeremonySeating" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Seating Plan Confirmed</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vCeremonyParking" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Parking Arranged</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vCeremonyAccess" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Accessibility Verified</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-4 sm:p-5 border border-slate-200 rounded-xl space-y-4 bg-slate-50/50">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-glass-cheers text-gold-500"></i> Reception Venue
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Venue Name</label>
+                                <input type="text" id="vReceptionName" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Address</label>
+                                <input type="text" id="vReceptionAddress" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Contact Person</label>
+                                <input type="text" id="vReceptionContactPerson" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Contact Phone/Email</label>
+                                <input type="text" id="vReceptionPhone" oninput="saveData()" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-2">
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vReceptionBooked" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Booked</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vReceptionDeposit" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Deposit Paid</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vReceptionFinalPay" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Final Payment Made</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vReceptionFloorPlan" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Floor Plan Approved</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vReceptionSetup" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Setup Time Confirmed</span>
+                            </label>
+                            <label class="flex items-center space-x-2.5 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_vReceptionBreakdown" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                <span>Breakdown Confirmed</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. VENDOR DIRECTORY -->
             <section id="sec-vendors" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Vendor Directory</h2>
-                    <p class="text-xs text-slate-500 mb-4">Directory for all your suppliers, contacts, and quotes.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="p-4 border border-slate-200 rounded-xl">
-                            <div class="text-xs font-bold text-blush-600 uppercase">Photographer</div>
-                            <h3 class="font-bold text-slate-900 mt-1">Cape Moments Photography</h3>
-                            <p class="text-xs text-slate-500 mt-1">Status: Contract Signed</p>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">7. Vendor Directory</h2>
+                            <p class="text-xs text-slate-500 mt-1">Manage service providers, quotes, contact info, and deposit statuses</p>
                         </div>
+                        <button onclick="addVendorRow()" class="px-3.5 py-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
+                            <i class="fa-solid fa-plus"></i> Add Vendor
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 custom-scrollbar">
+                        <table class="w-full text-left text-sm min-w-[750px]">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
+                                    <th class="p-3 rounded-l-xl">Vendor Role</th>
+                                    <th class="p-3">Company / Name</th>
+                                    <th class="p-3">Contact Person</th>
+                                    <th class="p-3">Phone</th>
+                                    <th class="p-3">Email</th>
+                                    <th class="p-3">Quoted Amount (R)</th>
+                                    <th class="p-3 text-center">Deposit Paid</th>
+                                    <th class="p-3 rounded-r-xl w-12 no-print"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendorTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic Vendor Rows -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
 
-            <!-- WEDDING ATTIRE -->
+            <!-- 8. WEDDING ATTIRE PLANNER -->
             <section id="sec-attire" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Wedding Attire</h2>
-                    <p class="text-xs text-slate-500">Track fitting dates, dress alterations, suit rentals, and accessories.</p>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">8. Wedding Attire Planner</h2>
+                        <p class="text-xs text-slate-500 mt-1">Checklist for bridal and groom attire & accessories</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <div class="p-4 sm:p-5 border border-slate-200 rounded-xl bg-slate-50/50 space-y-3">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-blush-600 flex items-center gap-2">
+                                <i class="fa-solid fa-person-dress"></i> Bride Attire
+                            </h3>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideDress" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Dress Ordered</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideFittings" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Dress Fittings Scheduled/Done</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideShoes" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Shoes Purchased</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideVeil" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Veil / Headpiece</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideJewellery" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Jewellery Accessories</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideLingerie" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Lingerie & Undergarments</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_brideAlterations" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Alterations Completed</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-4 sm:p-5 border border-slate-200 rounded-xl bg-slate-50/50 space-y-3">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-user-tie"></i> Groom Attire
+                            </h3>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_groomSuit" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Suit Ordered / Rented</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_groomShirt" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Shirt Tailored</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_groomTie" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Tie / Bow Tie & Pocket Square</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_groomShoes" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Shoes & Socks</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_groomWatch" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Watch / Cufflinks</span>
+                                </label>
+                                <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_groomAlterations" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                                    <span>Alterations Completed</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- CEREMONY & RECEPTION -->
+            <!-- 9 & 10. CEREMONY & RECEPTION PLANNER -->
             <section id="sec-ceremony-reception" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Ceremony & Reception</h2>
-                    <p class="text-xs text-slate-500">Plan order of proceedings, vows, speeches, and music lists.</p>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">9 & 10. Ceremony & Reception Planner</h2>
+                        <p class="text-xs text-slate-500 mt-1">Officiant details, order of service, and reception proceedings</p>
+                    </div>
+
+                    <div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-3">
+                        <h3 class="font-serif text-lg font-bold text-slate-800">Marriage Officer / Officiant Details</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Officiant Name</label>
+                                <input type="text" id="officiantName" oninput="saveData()" placeholder="e.g. Pastor David Smith" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Contact Phone / Email</label>
+                                <input type="text" id="officiantContact" oninput="saveData()" placeholder="082 123 4567" class="w-full p-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-800">Ceremony Order Checklist</h3>
+                            <ul class="space-y-2 text-sm text-slate-700 border border-slate-200 rounded-xl p-4 bg-slate-50/30">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Guest Arrival</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Processional</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Welcome & Introduction</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Scripture / Poem Readings</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Wedding Vows</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Ring Exchange</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Pronouncement of Marriage</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Signing Marriage Register</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold-500 text-xs"></i> Recessional</li>
+                            </ul>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-800">Readings & Special Elements</h3>
+                            <textarea id="ceremonyReadings" oninput="saveData()" placeholder="Enter poem titles, readers' names, special rituals (candle lighting, sand ceremony), etc..." class="w-full h-40 sm:h-48 p-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none resize-none custom-scrollbar"></textarea>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- MENU & CAKE -->
+            <!-- 11 & 12. MENU & CAKE PLANNER -->
             <section id="sec-menu-cake" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Menu & Cake</h2>
-                    <p class="text-xs text-slate-500">Organize food courses, wine pairings, and cake tasting notes.</p>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">11 & 12. Menu & Cake Planner</h2>
+                        <p class="text-xs text-slate-500 mt-1">Catering courses, drink options, and wedding cake specifications</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-800">Wedding Menu</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Starters / Canapés</label>
+                                <textarea id="menuStarters" oninput="saveData()" placeholder="e.g. Biltong & Fig tartlets, Smoked Salmon Crostini..." class="w-full h-24 p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Main Course</label>
+                                <textarea id="menuMains" oninput="saveData()" placeholder="e.g. Slow-roasted Karoo Lamb, Garlic Herb Chicken..." class="w-full h-24 p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Vegetarian / Vegan Option</label>
+                                <textarea id="menuVeg" oninput="saveData()" placeholder="e.g. Wild Mushroom Risotto..." class="w-full h-24 p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Desserts & Drinks</label>
+                                <textarea id="menuDessertsDrinks" oninput="saveData()" placeholder="e.g. Malva Pudding, Wedding Cake, Champagne, Wines..." class="w-full h-24 p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-100 space-y-4">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-800">Cake Planner</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold text-slate-700">Flavours Selected</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="chk_flvVanilla" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400">
+                                        <span>Vanilla</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="chk_flvChocolate" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400">
+                                        <span>Chocolate</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="chk_flvRedVelvet" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400">
+                                        <span>Red Velvet</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="chk_flvCarrot" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400">
+                                        <span>Carrot</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="chk_flvLemon" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400">
+                                        <span>Lemon</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="chk_flvOther" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400">
+                                        <span>Other Flavour</span>
+                                    </label>
+                                </div>
+                                <div class="pt-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Portion Count Needed</label>
+                                    <input type="number" id="cakePortions" oninput="saveData()" placeholder="100" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Cake Design & Decor Notes</label>
+                                <textarea id="cakeDesignNotes" oninput="saveData()" placeholder="e.g. 3 Tiers, semi-naked finish with fresh white roses and gold leaf accents..." class="w-full h-32 sm:h-36 p-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none resize-none custom-scrollbar"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- FLOWERS & DECOR -->
+            <!-- 13. FLOWER CHECKLIST -->
             <section id="sec-flowers" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Flowers & Decor</h2>
-                    <p class="text-xs text-slate-500">Color palettes, centerpieces, bouquet floral styles, and lighting setups.</p>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">13. Flower & Decor Checklist</h2>
+                        <p class="text-xs text-slate-500 mt-1">Check off floral requirements across all ceremony and reception areas</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-3">
+                            <h3 class="font-serif text-lg font-bold text-blush-600">Bridal Flowers</h3>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwBridalBouquet" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Bridal Bouquet</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwBridesmaidBouquets" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Bridesmaid Bouquets</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwBoutonnieres" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Boutonnieres (Groom/Groomsmen)</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwCorsages" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Corsages (Mothers/Grandmothers)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-3">
+                            <h3 class="font-serif text-lg font-bold text-gold-600">Ceremony Flowers</h3>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwAltar" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Altar / Arch Arrangement</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwAisle" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Aisle Flowers & Petals</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwEntrance" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Entrance Display / Welcome Sign</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-3">
+                            <h3 class="font-serif text-lg font-bold text-indigo-600">Reception Flowers</h3>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwCentrepieces" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Guest Table Centrepieces</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwCakeFlowers" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Cake Flowers</span>
+                                </label>
+                                <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+                                    <input type="checkbox" id="chk_flwHeadTable" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Head Table Garland / Runner</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- SEATING PLAN -->
+            <!-- 14. SEATING PLAN -->
             <section id="sec-seating" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Seating Plan</h2>
-                    <p class="text-xs text-slate-500">Arrange table numbers and seating assignments for attending guests.</p>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                            <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">14. Interactive Seating Plan</h2>
+                            <p class="text-xs text-slate-500 mt-1">Organize tables and assign confirmed guests</p>
+                        </div>
+                        <button onclick="addSeatingTable()" class="px-3.5 py-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
+                            <i class="fa-solid fa-plus"></i> Add Table
+                        </button>
+                    </div>
+
+                    <div id="seatingTablesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
                 </div>
             </section>
 
-            <!-- DAY TIMELINE -->
+            <!-- 16. WEDDING DAY TIMELINE -->
             <section id="sec-timeline" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Day Timeline</h2>
-                    <p class="text-xs text-slate-500 mb-4">Hour-by-hour schedule for vendors and bridal party.</p>
-                    <div class="border-l-2 border-blush-300 pl-4 space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
-                            <span class="text-xs font-bold text-blush-600">08:00 AM</span>
-                            <p class="text-sm font-semibold text-slate-900">Hair & Makeup Begins</p>
+                            <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">16. Wedding Day Timeline</h2>
+                            <p class="text-xs text-slate-500 mt-1">Master schedule for the big day from morning prep through farewell</p>
                         </div>
-                        <div>
-                            <span class="text-xs font-bold text-blush-600">15:00 PM</span>
-                            <p class="text-sm font-semibold text-slate-900">Ceremony Begins</p>
-                        </div>
+                        <button onclick="addTimelineItem()" class="px-3.5 py-2 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
+                            <i class="fa-solid fa-plus"></i> Add Schedule Event
+                        </button>
                     </div>
+
+                    <div id="timelineContainer" class="space-y-3 relative before:absolute before:inset-0 before:left-20 sm:before:left-24 before:w-0.5 before:bg-slate-200"></div>
                 </div>
             </section>
 
-            <!-- EMERGENCY KIT -->
+            <!-- 15. WEDDING DAY EMERGENCY KIT -->
             <section id="sec-emergency-kit" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Emergency Kit</h2>
-                    <p class="text-xs text-slate-500 mb-4">Checklist of emergency essentials for the big day.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                        <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-lg"><input type="checkbox" class="accent-blush-500"> Safety Pins & Sewing Kit</label>
-                        <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-lg"><input type="checkbox" class="accent-blush-500"> Stain Remover Pen</label>
-                        <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-lg"><input type="checkbox" class="accent-blush-500"> First Aid Kit / Painkillers</label>
-                        <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-lg"><input type="checkbox" class="accent-blush-500"> Extra Earring Backs</label>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">15. Wedding Day Emergency Kit</h2>
+                        <p class="text-xs text-slate-500 mt-1">Crucial items to pack for wedding day peace of mind</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emSafetyPins" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Safety Pins</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emSewingKit" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Sewing Kit</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emExtraMakeup" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Extra Makeup Touch-ups</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emHairSpray" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Hair Spray & Bobbi Pins</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emTissues" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Tissues / Handkerchiefs</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emPainRelievers" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Pain Relievers (Panado/Nuromol)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emStainRemover" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Stain Remover Pen</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emPhoneChargers" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Phone Chargers / Power bank</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emBreathMints" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Breath Mints</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emPlasters" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Plasters / Bandages</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emDeodorant" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Deodorant / Perfume</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="checkbox" id="chk_emExtraCash" onchange="saveData()" class="rounded text-blush-500 focus:ring-blush-400 w-4 h-4">
+                            <span class="text-xs sm:text-sm font-medium text-slate-700">Extra Cash Rand (R) for tips</span>
+                        </label>
                     </div>
                 </div>
             </section>
 
-            <!-- HONEYMOON PLANNER -->
+            <!-- 17. HONEYMOON PLANNER -->
             <section id="sec-honeymoon" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Honeymoon Planner</h2>
-                    <p class="text-xs text-slate-500">Destinations, flight arrangements, hotel bookings, and packing lists.</p>
-                </div>
-            </section>
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">17. Honeymoon Planner</h2>
+                        <p class="text-xs text-slate-500 mt-1">Post-wedding getaway details, travel bookings, and document verification</p>
+                    </div>
 
-            <!-- 12-MONTH CHECKLIST -->
-            <section id="sec-countdown-checklist" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
-                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">12-Month Checklist</h2>
-                    <p class="text-xs text-slate-500 mb-4">Step-by-step task checklist leading up to your wedding day.</p>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 text-sm">
-                            <input type="checkbox" class="w-4 h-4 text-blush-500 rounded border-slate-300 accent-blush-500">
-                            <span>Set wedding budget and total guest count target</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 text-sm">
-                            <input type="checkbox" class="w-4 h-4 text-blush-500 rounded border-slate-300 accent-blush-500">
-                            <span>Book venue and secure wedding date deposit</span>
-                        </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Destination</label>
+                            <input type="text" id="honeyDestination" oninput="saveData()" placeholder="e.g. Mauritius, Garden Route, Kruger Park..." class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Travel Dates</label>
+                            <input type="text" id="honeyDates" oninput="saveData()" placeholder="e.g. 15 Nov - 25 Nov" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2">
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2">
+                            <span class="block text-xs font-semibold text-slate-700">Flights Booked?</span>
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_honeyFlights" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                <span>Confirmed & Ticketed</span>
+                            </label>
+                        </div>
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2">
+                            <span class="block text-xs font-semibold text-slate-700">Accommodation?</span>
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_honeyAccom" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                <span>Resort Reserved</span>
+                            </label>
+                        </div>
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2">
+                            <span class="block text-xs font-semibold text-slate-700">Travel Insurance?</span>
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_honeyInsurance" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                <span>Policy Active</span>
+                            </label>
+                        </div>
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2">
+                            <span class="block text-xs font-semibold text-slate-700">Passport / ID Valid?</span>
+                            <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="chk_honeyPassport" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                <span>Checked (6+ Mo)</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </section>
-            
+
+            <!-- 18. 12-MONTH COUNTDOWN CHECKLIST -->
+            <section id="sec-countdown-checklist" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="font-serif text-xl sm:text-3xl font-bold text-slate-900">18. 12-Month Countdown Checklist</h2>
+                        <p class="text-xs text-slate-500 mt-1">Step-by-step milestone timeline leading up to the wedding day</p>
+                    </div>
+
+                    <div class="space-y-4 sm:space-y-6">
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50/30">
+                            <h3 class="font-serif text-base sm:text-lg font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar text-xs sm:text-sm"></i> 12 Months Before
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt12m_1" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Set overall budget</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt12m_2" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Choose wedding date</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt12m_3" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Book venue(s)</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt12m_4" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Draft preliminary guest list</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50/30">
+                            <h3 class="font-serif text-base sm:text-lg font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-camera text-xs sm:text-sm"></i> 9 Months Before
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt9m_1" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Book photographer & videographer</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt9m_2" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Book caterer & taste menus</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt9m_3" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Book DJ / Live Band / Entertainment</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50/30">
+                            <h3 class="font-serif text-base sm:text-lg font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-shirt text-xs sm:text-sm"></i> 6 Months Before
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt6m_1" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Order wedding attire & bridesmaid dresses</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt6m_2" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Send Save-The-Dates</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt6m_3" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Arrange florist & floral decor design</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50/30">
+                            <h3 class="font-serif text-base sm:text-lg font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-envelope text-xs sm:text-sm"></i> 3 Months Before
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt3m_1" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Send formal invitations</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt3m_2" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Confirm menu choices</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt3m_3" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Finalise decor, linens & hiring</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50/30">
+                            <h3 class="font-serif text-base sm:text-lg font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-clipboard-check text-xs sm:text-sm"></i> 1 Month Before
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt1m_1" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Confirm guest numbers & RSVPs</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt1m_2" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Confirm timing with all vendors</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt1m_3" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Prepare final seating plan</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 sm:p-4 border border-slate-200 rounded-xl space-y-2 bg-slate-50/30">
+                            <h3 class="font-serif text-base sm:text-lg font-bold text-gold-600 flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-xs sm:text-sm"></i> 1 Week Before
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt1w_1" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Final vendor confirmations & payments</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt1w_2" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Pack wedding day emergency kit</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" id="chk_cnt1w_3" onchange="saveData()" class="rounded text-blush-500 w-4 h-4">
+                                    <span>Collect steamed attire & suits</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
-    <!-- Script for Navigation & Drawer Controls -->
+    <!-- JavaScript Application Logic -->
     <script>
-        function toggleMobileNav(forceState) {
-            const nav = document.getElementById('mobileNav');
-            const backdrop = document.getElementById('navBackdrop');
-            if (!nav || !backdrop) return;
+        const DEFAULT_DATA = {
+            details: {
+                groom: '',
+                bride: '',
+                date: '',
+                ceremonyTime: '15:00',
+                receptionTime: '17:30',
+                colours: 'Blush, Sage & Gold',
+                estGuests: 100,
+                targetBudget: 150000
+            },
+            quickNotes: '',
+            budgetRows: [
+                { category: 'Venue', budgeted: 40000, actual: 40000, paid: 10000 },
+                { category: 'Catering', budgeted: 35000, actual: 35000, paid: 5000 },
+                { category: 'Wedding Dress', budgeted: 15000, actual: 16500, paid: 16500 },
+                { category: "Groom's Attire", budgeted: 6000, actual: 5500, paid: 5500 },
+                { category: 'Photography', budgeted: 18000, actual: 18000, paid: 5000 },
+                { category: 'Videography', budgeted: 12000, actual: 12000, paid: 2000 },
+                { category: 'Flowers & Decor', budgeted: 15000, actual: 14000, paid: 4000 }
+            ],
+            guestRows: [
+                { name: 'John Doe', category: 'Family', plusOne: 'Yes', inviteSent: true, rsvp: 'Accepted', dietary: 'None', isChild: false },
+                { name: 'Jane Smith', category: 'Friends', plusOne: 'No', inviteSent: true, rsvp: 'Pending', dietary: 'Vegetarian', isChild: false }
+            ],
+            bridalMembers: {
+                bridesmaids: [{ name: 'Sarah Miller', role: 'Maid of Honour', dress: 'Size 10', duty: 'Organise Hen Party' }],
+                groomsmen: [{ name: 'David Botha', role: 'Best Man', dress: 'Suit 38R', duty: 'Keep Rings Safe' }]
+            },
+            vendors: [
+                { role: 'Photographer', company: 'Memories Photography', contact: 'Annelize', phone: '082 000 0000', email: 'info@memories.co.za', quoted: 18000, depositPaid: true },
+                { role: 'Caterer', company: 'Gourmet Feast', contact: 'Chef Pieter', phone: '083 111 2222', email: 'pieter@feast.co.za', quoted: 35000, depositPaid: true }
+            ],
+            seatingTables: [
+                { name: 'Table 1 - VIP Family', capacity: 8, guests: 'John Doe, Sarah Miller' },
+                { name: 'Table 2 - University Friends', capacity: 10, guests: 'Jane Smith' }
+            ],
+            timeline: [
+                { time: '08:00', event: 'Hair & Makeup Starts' },
+                { time: '14:00', event: 'Photographer Arrives for Prep Shots' },
+                { time: '15:00', event: 'Ceremony Begins' },
+                { time: '16:00', event: 'Canapés & Couple Photos' },
+                { time: '17:30', event: 'Reception Grand Entrance' }
+            ],
+            checkboxes: {}
+        };
 
-            const isOpen = !nav.classList.contains('-translate-x-full');
-            const shouldOpen = forceState !== undefined ? forceState : !isOpen;
+        let appData = JSON.parse(localStorage.getItem('foreverAlwaysPlannerData')) || DEFAULT_DATA;
 
-            if (shouldOpen) {
-                nav.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
-            } else {
-                nav.classList.add('-translate-x-full');
-                backdrop.classList.add('hidden');
+        function saveData() {
+            // Read details
+            appData.details = {
+                groom: document.getElementById('detailsGroom')?.value || '',
+                bride: document.getElementById('detailsBride')?.value || '',
+                date: document.getElementById('detailsDate')?.value || '',
+                ceremonyTime: document.getElementById('detailsCeremonyTime')?.value || '',
+                receptionTime: document.getElementById('detailsReceptionTime')?.value || '',
+                colours: document.getElementById('detailsColours')?.value || '',
+                estGuests: Number(document.getElementById('detailsEstGuests')?.value || 0),
+                targetBudget: Number(document.getElementById('detailsTargetBudget')?.value || 0)
+            };
+
+            appData.quickNotes = document.getElementById('quickNotes')?.value || '';
+
+            // Read checkboxes
+            document.querySelectorAll('input[type="checkbox"][id^="chk_"]').forEach(chk => {
+                appData.checkboxes[chk.id] = chk.checked;
+            });
+
+            localStorage.setItem('foreverAlwaysPlannerData', JSON.stringify(appData));
+            updateCalculations();
+        }
+
+        function loadDataIntoUI() {
+            if (!appData.details) appData.details = DEFAULT_DATA.details;
+            
+            // Populate Details inputs
+            if(document.getElementById('detailsGroom')) document.getElementById('detailsGroom').value = appData.details.groom || '';
+            if(document.getElementById('detailsBride')) document.getElementById('detailsBride').value = appData.details.bride || '';
+            if(document.getElementById('detailsDate')) document.getElementById('detailsDate').value = appData.details.date || '';
+            if(document.getElementById('detailsCeremonyTime')) document.getElementById('detailsCeremonyTime').value = appData.details.ceremonyTime || '';
+            if(document.getElementById('detailsReceptionTime')) document.getElementById('detailsReceptionTime').value = appData.details.receptionTime || '';
+            if(document.getElementById('detailsColours')) document.getElementById('detailsColours').value = appData.details.colours || '';
+            if(document.getElementById('detailsEstGuests')) document.getElementById('detailsEstGuests').value = appData.details.estGuests || 100;
+            if(document.getElementById('detailsTargetBudget')) document.getElementById('detailsTargetBudget').value = appData.details.targetBudget || 150000;
+
+            if(document.getElementById('quickNotes')) document.getElementById('quickNotes').value = appData.quickNotes || '';
+
+            // Restore checkboxes
+            if (appData.checkboxes) {
+                Object.keys(appData.checkboxes).forEach(id => {
+                    const chk = document.getElementById(id);
+                    if (chk) chk.checked = appData.checkboxes[id];
+                });
             }
+
+            renderBudgetTable();
+            renderGuestTable();
+            renderBridalParty();
+            renderVendorTable();
+            renderSeatingTables();
+            renderTimeline();
+            updateCalculations();
         }
 
         function switchTab(tabId) {
-            // Hide all tab content sections
-            const tabSections = document.querySelectorAll('.tab-content');
-            tabSections.forEach(section => {
-                section.classList.add('hidden');
-            });
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const activeTab = document.getElementById(`sec-${tabId}`);
+            if (activeTab) activeTab.classList.remove('hidden');
 
-            // Show target tab content section
-            const targetSection = document.getElementById('sec-' + tabId);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-            }
-
-            // Reset navigation button active styling
-            const navBtns = document.querySelectorAll('.nav-btn');
-            navBtns.forEach(btn => {
-                btn.classList.remove('text-blush-600', 'bg-blush-50', 'font-semibold', 'shadow-xs');
+            document.querySelectorAll('#sidebarNav button').forEach(btn => {
+                btn.classList.remove('bg-blush-50', 'text-blush-600', 'font-semibold', 'shadow-xs');
                 btn.classList.add('text-slate-600');
             });
 
-            // Highlight selected navigation button
-            const activeBtn = document.getElementById('nav-' + tabId);
+            const activeBtn = document.getElementById(`nav-${tabId}`);
             if (activeBtn) {
+                activeBtn.classList.add('bg-blush-50', 'text-blush-600', 'font-semibold', 'shadow-xs');
                 activeBtn.classList.remove('text-slate-600');
-                activeBtn.classList.add('text-blush-600', 'bg-blush-50', 'font-semibold', 'shadow-xs');
-            }
-
-            // Close side drawer on small screens when an item is selected
-            if (window.innerWidth < 768) {
-                toggleMobileNav(false);
             }
         }
+
+        /* --- Dynamic Renderers --- */
+        function renderBudgetTable() {
+            const tbody = document.getElementById('budgetTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (appData.budgetRows || []).forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                const bal = (row.actual || 0) - (row.paid || 0);
+                tr.innerHTML = `
+                    <td class="p-2.5"><input type="text" value="${row.category || ''}" onchange="updateBudgetRow(${idx}, 'category', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="number" value="${row.budgeted || 0}" onchange="updateBudgetRow(${idx}, 'budgeted', this.value)" class="w-24 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="number" value="${row.actual || 0}" onchange="updateBudgetRow(${idx}, 'actual', this.value)" class="w-24 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="number" value="${row.paid || 0}" onchange="updateBudgetRow(${idx}, 'paid', this.value)" class="w-24 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5 font-semibold ${bal > 0 ? 'text-amber-700' : 'text-emerald-700'}">R ${bal.toFixed(2)}</td>
+                    <td class="p-2.5 text-right no-print"><button onclick="deleteBudgetRow(${idx})" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addBudgetRow() {
+            if (!appData.budgetRows) appData.budgetRows = [];
+            appData.budgetRows.push({ category: 'New Expense', budgeted: 0, actual: 0, paid: 0 });
+            saveData();
+            renderBudgetTable();
+        }
+
+        function updateBudgetRow(idx, field, val) {
+            appData.budgetRows[idx][field] = field === 'category' ? val : Number(val);
+            saveData();
+            renderBudgetTable();
+        }
+
+        function deleteBudgetRow(idx) {
+            appData.budgetRows.splice(idx, 1);
+            saveData();
+            renderBudgetTable();
+        }
+
+        function renderGuestTable() {
+            const tbody = document.getElementById('guestTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (appData.guestRows || []).forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2.5"><input type="text" value="${row.name || ''}" onchange="updateGuestRow(${idx}, 'name', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="text" value="${row.category || ''}" onchange="updateGuestRow(${idx}, 'category', this.value)" class="w-24 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5">
+                        <select onchange="updateGuestRow(${idx}, 'plusOne', this.value)" class="bg-transparent border border-slate-200 rounded p-1 text-xs">
+                            <option value="No" ${row.plusOne === 'No' ? 'selected' : ''}>No</option>
+                            <option value="Yes" ${row.plusOne === 'Yes' ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </td>
+                    <td class="p-2.5 text-center"><input type="checkbox" ${row.inviteSent ? 'checked' : ''} onchange="updateGuestRow(${idx}, 'inviteSent', this.checked)" class="rounded text-blush-500 w-4 h-4"></td>
+                    <td class="p-2.5">
+                        <select onchange="updateGuestRow(${idx}, 'rsvp', this.value)" class="bg-transparent border border-slate-200 rounded p-1 text-xs">
+                            <option value="Pending" ${row.rsvp === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Accepted" ${row.rsvp === 'Accepted' ? 'selected' : ''}>Accepted</option>
+                            <option value="Declined" ${row.rsvp === 'Declined' ? 'selected' : ''}>Declined</option>
+                        </select>
+                    </td>
+                    <td class="p-2.5"><input type="text" value="${row.dietary || ''}" onchange="updateGuestRow(${idx}, 'dietary', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5 text-center"><input type="checkbox" ${row.isChild ? 'checked' : ''} onchange="updateGuestRow(${idx}, 'isChild', this.checked)" class="rounded text-blush-500 w-4 h-4"></td>
+                    <td class="p-2.5 text-right no-print"><button onclick="deleteGuestRow(${idx})" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addGuestRow() {
+            if (!appData.guestRows) appData.guestRows = [];
+            appData.guestRows.push({ name: 'Guest Name', category: 'Friend', plusOne: 'No', inviteSent: false, rsvp: 'Pending', dietary: '', isChild: false });
+            saveData();
+            renderGuestTable();
+        }
+
+        function updateGuestRow(idx, field, val) {
+            appData.guestRows[idx][field] = val;
+            saveData();
+            renderGuestTable();
+        }
+
+        function deleteGuestRow(idx) {
+            appData.guestRows.splice(idx, 1);
+            saveData();
+            renderGuestTable();
+        }
+
+        function renderBridalParty() {
+            ['bridesmaids', 'groomsmen'].forEach(group => {
+                const container = document.getElementById(`${group}Container`);
+                if (!container) return;
+                container.innerHTML = '';
+
+                (appData.bridalMembers?.[group] || []).forEach((m, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 relative';
+                    card.innerHTML = `
+                        <button onclick="deleteBridalMember('${group}', ${idx})" class="absolute top-3 right-3 text-slate-400 hover:text-rose-500 no-print"><i class="fa-solid fa-times"></i></button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" value="${m.name || ''}" onchange="updateBridalMember('${group}', ${idx}, 'name', this.value)" placeholder="Name" class="p-1.5 bg-white rounded border border-slate-200 text-xs">
+                            <input type="text" value="${m.role || ''}" onchange="updateBridalMember('${group}', ${idx}, 'role', this.value)" placeholder="Role" class="p-1.5 bg-white rounded border border-slate-200 text-xs">
+                            <input type="text" value="${m.dress || ''}" onchange="updateBridalMember('${group}', ${idx}, 'dress', this.value)" placeholder="Attire Size" class="p-1.5 bg-white rounded border border-slate-200 text-xs">
+                            <input type="text" value="${m.duty || ''}" onchange="updateBridalMember('${group}', ${idx}, 'duty', this.value)" placeholder="Assigned Duties" class="p-1.5 bg-white rounded border border-slate-200 text-xs">
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        function addBridalMember(group) {
+            if (!appData.bridalMembers) appData.bridalMembers = { bridesmaids: [], groomsmen: [] };
+            if (!appData.bridalMembers[group]) appData.bridalMembers[group] = [];
+            appData.bridalMembers[group].push({ name: '', role: '', dress: '', duty: '' });
+            saveData();
+            renderBridalParty();
+        }
+
+        function updateBridalMember(group, idx, field, val) {
+            appData.bridalMembers[group][idx][field] = val;
+            saveData();
+        }
+
+        function deleteBridalMember(group, idx) {
+            appData.bridalMembers[group].splice(idx, 1);
+            saveData();
+            renderBridalParty();
+        }
+
+        function renderVendorTable() {
+            const tbody = document.getElementById('vendorTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (appData.vendors || []).forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2.5"><input type="text" value="${row.role || ''}" onchange="updateVendorRow(${idx}, 'role', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="text" value="${row.company || ''}" onchange="updateVendorRow(${idx}, 'company', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="text" value="${row.contact || ''}" onchange="updateVendorRow(${idx}, 'contact', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="text" value="${row.phone || ''}" onchange="updateVendorRow(${idx}, 'phone', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="text" value="${row.email || ''}" onchange="updateVendorRow(${idx}, 'email', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5"><input type="number" value="${row.quoted || 0}" onchange="updateVendorRow(${idx}, 'quoted', this.value)" class="w-24 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none"></td>
+                    <td class="p-2.5 text-center"><input type="checkbox" ${row.depositPaid ? 'checked' : ''} onchange="updateVendorRow(${idx}, 'depositPaid', this.checked)" class="rounded text-blush-500 w-4 h-4"></td>
+                    <td class="p-2.5 text-right no-print"><button onclick="deleteVendorRow(${idx})" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addVendorRow() {
+            if (!appData.vendors) appData.vendors = [];
+            appData.vendors.push({ role: 'Category', company: '', contact: '', phone: '', email: '', quoted: 0, depositPaid: false });
+            saveData();
+            renderVendorTable();
+        }
+
+        function updateVendorRow(idx, field, val) {
+            appData.vendors[idx][field] = field === 'quoted' ? Number(val) : val;
+            saveData();
+            renderVendorTable();
+        }
+
+        function deleteVendorRow(idx) {
+            appData.vendors.splice(idx, 1);
+            saveData();
+            renderVendorTable();
+        }
+
+        function renderSeatingTables() {
+            const container = document.getElementById('seatingTablesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            (appData.seatingTables || []).forEach((t, idx) => {
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3 relative';
+                card.innerHTML = `
+                    <button onclick="deleteSeatingTable(${idx})" class="absolute top-4 right-4 text-slate-400 hover:text-rose-500 no-print"><i class="fa-solid fa-trash"></i></button>
+                    <input type="text" value="${t.name || ''}" onchange="updateSeatingTable(${idx}, 'name', this.value)" class="font-serif font-bold text-slate-900 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-blush-400 outline-none w-10/12">
+                    <div class="flex items-center gap-2 text-xs text-slate-600">
+                        <span>Capacity:</span>
+                        <input type="number" value="${t.capacity || 8}" onchange="updateSeatingTable(${idx}, 'capacity', this.value)" class="w-16 p-1 rounded border border-slate-200 bg-white">
+                    </div>
+                    <textarea onchange="updateSeatingTable(${idx}, 'guests', this.value)" placeholder="List guests assigned to this table..." class="w-full h-24 p-2 rounded-xl border border-slate-200 bg-white text-xs outline-none resize-none custom-scrollbar">${t.guests || ''}</textarea>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addSeatingTable() {
+            if (!appData.seatingTables) appData.seatingTables = [];
+            appData.seatingTables.push({ name: `Table ${appData.seatingTables.length + 1}`, capacity: 8, guests: '' });
+            saveData();
+            renderSeatingTables();
+        }
+
+        function updateSeatingTable(idx, field, val) {
+            appData.seatingTables[idx][field] = field === 'capacity' ? Number(val) : val;
+            saveData();
+        }
+
+        function deleteSeatingTable(idx) {
+            appData.seatingTables.splice(idx, 1);
+            saveData();
+            renderSeatingTables();
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            (appData.timeline || []).sort((a,b) => (a.time || '').localeCompare(b.time || '')).forEach((item, idx) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 sm:gap-4 relative z-10';
+                row.innerHTML = `
+                    <input type="time" value="${item.time || ''}" onchange="updateTimelineItem(${idx}, 'time', this.value)" class="w-20 sm:w-24 p-1.5 sm:p-2 bg-white rounded-xl border border-slate-200 text-xs sm:text-sm text-center font-bold text-blush-600 outline-none">
+                    <div class="w-3 h-3 rounded-full bg-gold-400 border-2 border-white shadow-xs shrink-0"></div>
+                    <input type="text" value="${item.event || ''}" onchange="updateTimelineItem(${idx}, 'event', this.value)" placeholder="Event description..." class="flex-1 p-1.5 sm:p-2 bg-white rounded-xl border border-slate-200 text-xs sm:text-sm outline-none">
+                    <button onclick="deleteTimelineItem(${idx})" class="text-slate-400 hover:text-rose-500 no-print shrink-0 px-1"><i class="fa-solid fa-times"></i></button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function addTimelineItem() {
+            if (!appData.timeline) appData.timeline = [];
+            appData.timeline.push({ time: '12:00', event: 'New Event' });
+            saveData();
+            renderTimeline();
+        }
+
+        function updateTimelineItem(idx, field, val) {
+            appData.timeline[idx][field] = val;
+            saveData();
+            renderTimeline();
+        }
+
+        function deleteTimelineItem(idx) {
+            appData.timeline.splice(idx, 1);
+            saveData();
+            renderTimeline();
+        }
+
+        /* --- Calculations & Updates --- */
+        function updateCalculations() {
+            // Budget Calculations
+            const target = Number(appData.details?.targetBudget || 0);
+            let totalBudgeted = 0, totalActual = 0, totalPaid = 0;
+
+            (appData.budgetRows || []).forEach(r => {
+                totalBudgeted += Number(r.budgeted || 0);
+                totalActual += Number(r.actual || 0);
+                totalPaid += Number(r.paid || 0);
+            });
+
+            const balance = target - totalActual;
+
+            const formatR = num => 'R ' + num.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            if(document.getElementById('bgTotalBudget')) document.getElementById('bgTotalBudget').innerText = formatR(target);
+            if(document.getElementById('bgSumBudgeted')) document.getElementById('bgSumBudgeted').innerText = formatR(totalBudgeted);
+            if(document.getElementById('bgSumActual')) document.getElementById('bgSumActual').innerText = formatR(totalActual);
+            if(document.getElementById('bgSumPaid')) document.getElementById('bgSumPaid').innerText = formatR(totalPaid);
+            if(document.getElementById('bgSumBalance')) document.getElementById('bgSumBalance').innerText = formatR(balance);
+
+            if(document.getElementById('globalBudgetTotal')) document.getElementById('globalBudgetTotal').innerText = formatR(target);
+            if(document.getElementById('globalBudgetSpent')) document.getElementById('globalBudgetSpent').innerText = formatR(totalActual);
+            if(document.getElementById('globalBudgetRemaining')) document.getElementById('globalBudgetRemaining').innerText = formatR(balance);
+
+            if(document.getElementById('dashTotalSpent')) document.getElementById('dashTotalSpent').innerText = formatR(totalActual);
+            if(document.getElementById('dashBudgetedTotal')) document.getElementById('dashBudgetedTotal').innerText = formatR(target);
+            if(document.getElementById('dashBalance')) document.getElementById('dashBalance').innerText = formatR(balance);
+
+            // Guest Statistics
+            let invited = 0, accepted = 0, declined = 0, pending = 0, children = 0;
+            (appData.guestRows || []).forEach(g => {
+                const count = g.plusOne === 'Yes' ? 2 : 1;
+                invited += count;
+                if (g.rsvp === 'Accepted') accepted += count;
+                else if (g.rsvp === 'Declined') declined += count;
+                else pending += count;
+
+                if (g.isChild) children++;
+            });
+
+            if(document.getElementById('gStatInvited')) document.getElementById('gStatInvited').innerText = invited;
+            if(document.getElementById('gStatAccepted')) document.getElementById('gStatAccepted').innerText = accepted;
+            if(document.getElementById('gStatDeclined')) document.getElementById('gStatDeclined').innerText = declined;
+            if(document.getElementById('gStatPending')) document.getElementById('gStatPending').innerText = pending;
+            if(document.getElementById('gStatChildren')) document.getElementById('gStatChildren').innerText = children;
+            if(document.getElementById('gStatTotal')) document.getElementById('gStatTotal').innerText = invited;
+
+            if(document.getElementById('dashAttendingGuests')) document.getElementById('dashAttendingGuests').innerText = `${accepted} / ${invited}`;
+            if(document.getElementById('dashPendingGuests')) document.getElementById('dashPendingGuests').innerText = pending;
+            if(document.getElementById('dashDeclinedGuests')) document.getElementById('dashDeclinedGuests').innerText = declined;
+
+            // Checklist Progress
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][id^="chk_"]');
+            let checkedCount = 0;
+            checkboxes.forEach(c => { if(c.checked) checkedCount++; });
+            const totalCheckboxes = checkboxes.length;
+            const percent = totalCheckboxes > 0 ? Math.round((checkedCount / totalCheckboxes) * 100) : 0;
+
+            if(document.getElementById('dashProgressPercent')) document.getElementById('dashProgressPercent').innerText = `${percent}%`;
+            if(document.getElementById('dashProgressBar')) document.getElementById('dashProgressBar').style.width = `${percent}%`;
+            if(document.getElementById('dashProgressText')) document.getElementById('dashProgressText').innerText = `${checkedCount} of ${totalCheckboxes} tasks completed`;
+
+            // Groom & Bride display name
+            const groom = appData.details?.groom || 'Groom';
+            const bride = appData.details?.bride || 'Bride';
+            if(document.getElementById('dashTitleCouple')) document.getElementById('dashTitleCouple').innerText = `${bride} & ${groom}`;
+        }
+
+        /* --- Countdown Clock --- */
+        function initCountdown() {
+            setInterval(() => {
+                const dateStr = appData.details?.date;
+                if (!dateStr) return;
+
+                const weddingDate = new Date(dateStr).getTime();
+                const now = new Date().getTime();
+                const diff = weddingDate - now;
+
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    if(document.getElementById('cdDays')) document.getElementById('cdDays').innerText = String(days).padStart(2, '0');
+                    if(document.getElementById('cdHours')) document.getElementById('cdHours').innerText = String(hours).padStart(2, '0');
+                    if(document.getElementById('cdMins')) document.getElementById('cdMins').innerText = String(mins).padStart(2, '0');
+                    if(document.getElementById('cdSecs')) document.getElementById('cdSecs').innerText = String(secs).padStart(2, '0');
+                    if(document.getElementById('dashSubDate')) document.getElementById('dashSubDate').innerText = `Counting down to ${dateStr}`;
+                } else {
+                    if(document.getElementById('dashSubDate')) document.getElementById('dashSubDate').innerText = 'The big day is here!';
+                }
+            }, 1000);
+        }
+
+        /* --- Import / Export --- */
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `Forever_Always_Wedding_Planner_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function importData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    appData = JSON.parse(e.target.result);
+                    localStorage.setItem('foreverAlwaysPlannerData', JSON.stringify(appData));
+                    loadDataIntoUI();
+                    alert('Planner data imported successfully!');
+                } catch (err) {
+                    alert('Invalid file format. Please upload a valid exported JSON file.');
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDataIntoUI();
+            initCountdown();
+        });
     </script>
 </body>
 </html>
