@@ -72,23 +72,21 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            .page-break {
-                page-break-before: always;
-            }
         }
     </style>
 </head>
 <body class="h-full flex flex-col font-sans text-slate-800 bg-slate-50 antialiased selection:bg-blush-200 selection:text-slate-900 custom-scrollbar">
 
     <!-- Top Navigation Header -->
-    <header class="bg-white/95 backdrop-blur border-b border-blush-200 sticky top-0 z-50 no-print shadow-xs">
+    <header class="bg-white/95 backdrop-blur border-b border-blush-200 sticky top-0 z-40 no-print shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <!-- Mobile Hamburger Toggle -->
-                    <button onclick="toggleMobileNav()" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Toggle Navigation">
+                <div class="flex items-center space-x-3">
+                    <!-- Mobile Hamburger Button (Mobile Only) -->
+                    <button onclick="toggleMobileNav(true)" class="md:hidden p-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Open Navigation Menu">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
+
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blush-100 border border-gold-300 flex items-center justify-center text-gold-500 shadow-inner shrink-0">
                         <i class="fa-solid font-bold fa-heart text-sm sm:text-lg text-blush-500"></i>
                     </div>
@@ -120,22 +118,26 @@
         </div>
     </header>
 
-    <!-- Navigation Overlay Backdrop for Mobile -->
-    <div id="navBackdrop" onclick="toggleMobileNav(false)" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden md:hidden transition-opacity"></div>
+    <!-- Mobile Drawer Overlay Backdrop -->
+    <div id="navBackdrop" onclick="toggleMobileNav(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden md:hidden transition-opacity"></div>
 
     <!-- Main Container -->
     <div class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col md:flex-row gap-6">
 
-        <!-- Off-Canvas / Responsive Sidebar Navigation -->
-        <aside id="mobileNav" class="fixed inset-y-0 left-0 z-50 w-72 bg-white transform -translate-x-full transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:w-64 shrink-0 no-print flex flex-col border-r md:border-r-0 border-slate-200 shadow-xl md:shadow-none">
+        <!-- Mobile Drawer / Desktop Sidebar -->
+        <aside id="mobileNav" class="fixed inset-y-0 left-0 z-50 w-72 bg-white transform -translate-x-full transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:w-64 shrink-0 no-print flex flex-col border-r md:border-r-0 border-slate-200 shadow-2xl md:shadow-none">
+            <!-- Mobile Drawer Header -->
             <div class="p-4 border-b border-slate-100 flex items-center justify-between md:hidden">
-                <span class="font-serif font-bold text-lg text-slate-900">Navigation</span>
-                <button onclick="toggleMobileNav(false)" class="p-1 rounded-lg text-slate-500 hover:bg-slate-100">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-heart text-blush-500"></i>
+                    <span class="font-serif font-bold text-lg text-slate-900">Wedding Navigation</span>
+                </div>
+                <button onclick="toggleMobileNav(false)" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none" aria-label="Close Navigation Menu">
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
             
-            <div class="bg-white rounded-2xl md:border md:border-slate-200/80 p-3 md:sticky md:top-24 space-y-1 overflow-y-auto max-h-[calc(100vh-5rem)] custom-scrollbar">
+            <div class="p-3 md:p-0 md:sticky md:top-24 space-y-1 overflow-y-auto max-h-[calc(100vh-5rem)] custom-scrollbar">
                 <nav id="sidebarNav" class="space-y-1 text-sm font-medium">
                     <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-blush-600 bg-blush-50 font-semibold shadow-xs">
                         <i class="fa-solid fa-chart-pie w-5 text-center"></i>
@@ -203,7 +205,7 @@
                     </button>
                 </nav>
 
-                <!-- Global Budget Summary -->
+                <!-- Global Budget Widget -->
                 <div class="mt-3 pt-3 border-t border-slate-100">
                     <div class="rounded-xl bg-blush-50 border border-blush-100 p-3">
                         <div class="flex items-center gap-2 mb-2">
@@ -224,7 +226,7 @@
             </div>
         </aside>
 
-        <!-- Main Content Viewport -->
+        <!-- Main Content Area -->
         <main class="flex-1 min-w-0 print-full-width">
 
             <!-- DASHBOARD OVERVIEW -->
@@ -314,217 +316,11 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs">
-                        <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-note-sticky text-gold-500"></i> Quick Planner Notes
-                        </h3>
-                        <textarea id="quickNotes" oninput="saveData()" placeholder="Write any important thoughts, venue notes, or reminders here..." class="w-full h-32 sm:h-40 p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blush-300 focus:border-blush-400 text-sm outline-none resize-none custom-scrollbar"></textarea>
-                    </div>
-
-                    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-xs flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-serif text-lg sm:text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
-                                <i class="fa-solid fa-wand-magic-sparkles text-blush-500"></i> Quick Actions
-                            </h3>
-                            <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
-                                <button onclick="switchTab('budget')" class="p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
-                                    <i class="fa-solid fa-plus text-blush-500 text-base"></i> Add Expense
-                                </button>
-                                <button onclick="switchTab('guests')" class="p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
-                                    <i class="fa-solid fa-user-plus text-blush-500 text-base"></i> Add RSVP Guest
-                                </button>
-                                <button onclick="switchTab('seating')" class="p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
-                                    <i class="fa-solid fa-chair text-blush-500 text-base"></i> Seating Plan
-                                </button>
-                                <button onclick="switchTab('timeline')" class="p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-blush-50 hover:border-blush-200 transition text-left text-xs font-semibold text-slate-700 flex flex-col items-start gap-1">
-                                    <i class="fa-solid fa-clock text-blush-500 text-base"></i> Day Timeline
-                                </button>
-                            </div>
-                        </div>
-                        <div class="mt-4 p-3 bg-champagne rounded-xl border border-gold-300/40 text-xs text-slate-700 flex items-center gap-2">
-                            <i class="fa-solid fa-lightbulb text-gold-500 text-base shrink-0"></i>
-                            <span><strong>Pro Tip:</strong> Keep quotations and marriage officer documents saved in a dedicated drive for quick access on mobile.</span>
-                        </div>
-                    </div>
-                </div>
             </section>
-
-            <!-- 2. WEDDING DETAILS -->
-            <section id="sec-details" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
-                    <div class="border-b border-slate-100 pb-4">
-                        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">1. Wedding Details</h2>
-                        <p class="text-xs text-slate-500 mt-1">Key information regarding the couple and event schedule</p>
-                    </div>
-
-                    <div class="space-y-6">
-                        <h3 class="text-xs sm:text-sm font-semibold text-gold-600 tracking-wider uppercase border-l-2 border-gold-400 pl-2">Couple Information</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Groom's Full Name</label>
-                                <input type="text" id="detailsGroom" oninput="saveData()" placeholder="e.g. Johan van der Merwe" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Bride's Full Name</label>
-                                <input type="text" id="detailsBride" oninput="saveData()" placeholder="e.g. Thandiwe Nkosi" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                        </div>
-
-                        <h3 class="text-xs sm:text-sm font-semibold text-gold-600 tracking-wider uppercase border-l-2 border-gold-400 pl-2">Wedding Details</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Wedding Date</label>
-                                <input type="date" id="detailsDate" onchange="saveData()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Ceremony Time</label>
-                                <input type="time" id="detailsCeremonyTime" oninput="saveData()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Reception Time</label>
-                                <input type="time" id="detailsReceptionTime" oninput="saveData()" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Wedding Colours / Theme</label>
-                                <input type="text" id="detailsColours" oninput="saveData()" placeholder="e.g. Sage Green & Gold" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Estimated Guest Count</label>
-                                <input type="number" inputmode="numeric" id="detailsEstGuests" oninput="saveData()" placeholder="120" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">Total Target Budget (R)</label>
-                                <input type="number" inputmode="decimal" id="detailsTargetBudget" oninput="saveData()" placeholder="150000" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blush-300 outline-none">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3. MASTER BUDGET PLANNER -->
-            <section id="sec-budget" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                        <div>
-                            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">2. Master Budget Planner</h2>
-                            <p class="text-xs text-slate-500 mt-1">Track budgeted costs, actual vendor quotes, and payments in South African Rand (R)</p>
-                        </div>
-                        <button onclick="addBudgetRow()" class="w-full sm:w-auto px-4 py-2.5 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-plus"></i> Add Custom Expense
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-                        <div class="bg-blush-50 border border-blush-100 rounded-xl p-3 sm:p-4 col-span-2 sm:col-span-1">
-                            <span class="text-xs font-semibold text-blush-700 block">Overall Target</span>
-                            <span class="text-base sm:text-lg font-bold text-slate-900 mt-1 block" id="bgTotalBudget">R 0.00</span>
-                        </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4">
-                            <span class="text-xs font-semibold text-slate-500 block">Budgeted</span>
-                            <span class="text-base sm:text-lg font-bold text-slate-900 mt-1 block" id="bgSumBudgeted">R 0.00</span>
-                        </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4">
-                            <span class="text-xs font-semibold text-amber-700 block">Actual Cost</span>
-                            <span class="text-base sm:text-lg font-bold text-amber-900 mt-1 block" id="bgSumActual">R 0.00</span>
-                        </div>
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
-                            <span class="text-xs font-semibold text-emerald-700 block">Total Paid</span>
-                            <span class="text-base sm:text-lg font-bold text-emerald-900 mt-1 block" id="bgSumPaid">R 0.00</span>
-                        </div>
-                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 sm:p-4 col-span-2 sm:col-span-1">
-                            <span class="text-xs font-semibold text-rose-700 block">Remaining Balance</span>
-                            <span class="text-base sm:text-lg font-bold text-rose-900 mt-1 block" id="bgSumBalance">R 0.00</span>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto custom-scrollbar -mx-4 sm:mx-0 px-4 sm:px-0">
-                        <table class="w-full min-w-[600px] text-left text-sm">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
-                                    <th class="p-3 rounded-l-xl">Category</th>
-                                    <th class="p-3">Budgeted (R)</th>
-                                    <th class="p-3">Actual Cost (R)</th>
-                                    <th class="p-3">Paid (R)</th>
-                                    <th class="p-3">Balance (R)</th>
-                                    <th class="p-3 rounded-r-xl w-12 no-print"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="budgetTableBody" class="divide-y divide-slate-100">
-                                <!-- Dynamic Rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. GUEST LIST PLANNER -->
-            <section id="sec-guests" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs space-y-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                        <div>
-                            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">4. Guest List Planner</h2>
-                            <p class="text-xs text-slate-500 mt-1">Manage guest invitations, plus-ones, dietary requirements, and RSVPs</p>
-                        </div>
-                        <button onclick="addGuestRow()" class="w-full sm:w-auto px-4 py-2.5 bg-blush-500 hover:bg-blush-600 text-white rounded-xl text-xs font-medium shadow-xs transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-user-plus"></i> Add Guest
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center">
-                            <span class="text-[10px] sm:text-xs font-semibold text-slate-500">Invited</span>
-                            <span class="block text-lg sm:text-xl font-bold text-slate-800 mt-0.5" id="gStatInvited">0</span>
-                        </div>
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 sm:p-3 text-center">
-                            <span class="text-[10px] sm:text-xs font-semibold text-emerald-700">Accepted</span>
-                            <span class="block text-lg sm:text-xl font-bold text-emerald-800 mt-0.5" id="gStatAccepted">0</span>
-                        </div>
-                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-2.5 sm:p-3 text-center">
-                            <span class="text-[10px] sm:text-xs font-semibold text-rose-700">Declined</span>
-                            <span class="block text-lg sm:text-xl font-bold text-rose-800 mt-0.5" id="gStatDeclined">0</span>
-                        </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 sm:p-3 text-center">
-                            <span class="text-[10px] sm:text-xs font-semibold text-amber-700">Pending</span>
-                            <span class="block text-lg sm:text-xl font-bold text-amber-800 mt-0.5" id="gStatPending">0</span>
-                        </div>
-                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 sm:p-3 text-center">
-                            <span class="text-[10px] sm:text-xs font-semibold text-purple-700">Children</span>
-                            <span class="block text-lg sm:text-xl font-bold text-purple-800 mt-0.5" id="gStatChildren">0</span>
-                        </div>
-                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 sm:p-3 text-center col-span-2 sm:col-span-1">
-                            <span class="text-[10px] sm:text-xs font-semibold text-blue-700">Total Guests</span>
-                            <span class="block text-lg sm:text-xl font-bold text-blue-800 mt-0.5" id="gStatTotal">0</span>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto custom-scrollbar -mx-4 sm:mx-0 px-4 sm:px-0">
-                        <table class="w-full min-w-[700px] text-left text-sm">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
-                                    <th class="p-3 rounded-l-xl">Guest Name</th>
-                                    <th class="p-3">Category</th>
-                                    <th class="p-3">Plus One?</th>
-                                    <th class="p-3">Invite Sent</th>
-                                    <th class="p-3">RSVP Status</th>
-                                    <th class="p-3">Dietary</th>
-                                    <th class="p-3 text-center">Child?</th>
-                                    <th class="p-3 rounded-r-xl w-12 no-print"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="guestTableBody" class="divide-y divide-slate-100">
-                                <!-- Dynamic Guest Rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
         </main>
     </div>
 
-    <!-- Mobile Menu Interactivity Script -->
+    <!-- Navigation Drawer Control Script -->
     <script>
         function toggleMobileNav(forceState) {
             const nav = document.getElementById('mobileNav');
@@ -541,7 +337,7 @@
             }
         }
 
-        // Close navigation drawer when clicking links on mobile screens
+        // Auto close drawer when tab option is tapped on mobile
         const originalSwitchTab = window.switchTab;
         window.switchTab = function(tabId) {
             if (typeof originalSwitchTab === 'function') {
