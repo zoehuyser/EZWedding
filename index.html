@@ -82,8 +82,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <div class="flex items-center space-x-3">
-                    <!-- Mobile Hamburger Button (Mobile Only) -->
-                    <button onclick="toggleMobileNav(true)" class="md:hidden p-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Open Navigation Menu">
+                    <!-- Mobile Hamburger Button -->
+                    <button id="mobileMenuBtn" onclick="toggleMobileNav(true)" class="md:hidden p-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Open Navigation Menu">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
 
@@ -118,19 +118,19 @@
         </div>
     </header>
 
-    <!-- Mobile Drawer Overlay Backdrop -->
+    <!-- Mobile Navigation Overlay Backdrop -->
     <div id="navBackdrop" onclick="toggleMobileNav(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden md:hidden transition-opacity"></div>
 
     <!-- Main Container -->
     <div class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col md:flex-row gap-6">
 
-        <!-- Mobile Drawer / Desktop Sidebar -->
+        <!-- Off-Canvas Drawer (Mobile) / Sidebar (Desktop) -->
         <aside id="mobileNav" class="fixed inset-y-0 left-0 z-50 w-72 bg-white transform -translate-x-full transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:w-64 shrink-0 no-print flex flex-col border-r md:border-r-0 border-slate-200 shadow-2xl md:shadow-none">
-            <!-- Mobile Drawer Header -->
+            <!-- Drawer Header -->
             <div class="p-4 border-b border-slate-100 flex items-center justify-between md:hidden">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-heart text-blush-500"></i>
-                    <span class="font-serif font-bold text-lg text-slate-900">Wedding Navigation</span>
+                    <span class="font-serif font-bold text-lg text-slate-900">Navigation</span>
                 </div>
                 <button onclick="toggleMobileNav(false)" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none" aria-label="Close Navigation Menu">
                     <i class="fa-solid fa-xmark text-xl"></i>
@@ -139,67 +139,67 @@
             
             <div class="p-3 md:p-0 md:sticky md:top-24 space-y-1 overflow-y-auto max-h-[calc(100vh-5rem)] custom-scrollbar">
                 <nav id="sidebarNav" class="space-y-1 text-sm font-medium">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-blush-600 bg-blush-50 font-semibold shadow-xs">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-blush-600 bg-blush-50 font-semibold shadow-xs">
                         <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                         <span class="truncate">Dashboard</span>
                     </button>
-                    <button onclick="switchTab('details')" id="nav-details" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('details')" id="nav-details" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-heart w-5 text-center"></i>
                         <span class="truncate">Wedding Details</span>
                     </button>
-                    <button onclick="switchTab('budget')" id="nav-budget" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('budget')" id="nav-budget" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-coins w-5 text-center"></i>
                         <span class="truncate">Master Budget (R)</span>
                     </button>
-                    <button onclick="switchTab('guests')" id="nav-guests" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('guests')" id="nav-guests" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-users w-5 text-center"></i>
                         <span class="truncate">Guest List Tracker</span>
                     </button>
-                    <button onclick="switchTab('bridal-party')" id="nav-bridal-party" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('bridal-party')" id="nav-bridal-party" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-user-group w-5 text-center"></i>
                         <span class="truncate">Bridal Party</span>
                     </button>
-                    <button onclick="switchTab('venues')" id="nav-venues" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('venues')" id="nav-venues" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-building-columns w-5 text-center"></i>
                         <span class="truncate">Venues Checklist</span>
                     </button>
-                    <button onclick="switchTab('vendors')" id="nav-vendors" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('vendors')" id="nav-vendors" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-address-book w-5 text-center"></i>
                         <span class="truncate">Vendor Directory</span>
                     </button>
-                    <button onclick="switchTab('attire')" id="nav-attire" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('attire')" id="nav-attire" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-vest-patches w-5 text-center"></i>
                         <span class="truncate">Wedding Attire</span>
                     </button>
-                    <button onclick="switchTab('ceremony-reception')" id="nav-ceremony-reception" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('ceremony-reception')" id="nav-ceremony-reception" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-church w-5 text-center"></i>
                         <span class="truncate">Ceremony & Reception</span>
                     </button>
-                    <button onclick="switchTab('menu-cake')" id="nav-menu-cake" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('menu-cake')" id="nav-menu-cake" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-utensils w-5 text-center"></i>
                         <span class="truncate">Menu & Cake</span>
                     </button>
-                    <button onclick="switchTab('flowers')" id="nav-flowers" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('flowers')" id="nav-flowers" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-spa w-5 text-center"></i>
                         <span class="truncate">Flowers & Decor</span>
                     </button>
-                    <button onclick="switchTab('seating')" id="nav-seating" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('seating')" id="nav-seating" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-chair w-5 text-center"></i>
                         <span class="truncate">Seating Plan</span>
                     </button>
-                    <button onclick="switchTab('timeline')" id="nav-timeline" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('timeline')" id="nav-timeline" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-clock w-5 text-center"></i>
                         <span class="truncate">Day Timeline</span>
                     </button>
-                    <button onclick="switchTab('emergency-kit')" id="nav-emergency-kit" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('emergency-kit')" id="nav-emergency-kit" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-kit-medical w-5 text-center"></i>
                         <span class="truncate">Emergency Kit</span>
                     </button>
-                    <button onclick="switchTab('honeymoon')" id="nav-honeymoon" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('honeymoon')" id="nav-honeymoon" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-plane-departure w-5 text-center"></i>
                         <span class="truncate">Honeymoon Planner</span>
                     </button>
-                    <button onclick="switchTab('countdown-checklist')" id="nav-countdown-checklist" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
+                    <button onclick="switchTab('countdown-checklist')" id="nav-countdown-checklist" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all text-slate-600 hover:bg-slate-50">
                         <i class="fa-solid fa-calendar-check w-5 text-center"></i>
                         <span class="truncate">12-Month Checklist</span>
                     </button>
@@ -226,10 +226,10 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Viewport -->
         <main class="flex-1 min-w-0 print-full-width">
 
-            <!-- DASHBOARD OVERVIEW -->
+            <!-- DASHBOARD -->
             <section id="sec-dashboard" class="tab-content space-y-4 sm:space-y-6">
                 <div class="relative rounded-2xl bg-gradient-to-r from-blush-500 via-blush-400 to-gold-400 p-5 sm:p-8 text-white shadow-lg overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-white/10 blur-xl"></div>
@@ -317,14 +317,41 @@
                     </div>
                 </div>
             </section>
+
+            <!-- WEDDING DETAILS -->
+            <section id="sec-details" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Wedding Details</h2>
+                    <p class="text-xs text-slate-500">Configure your names, wedding date, and estimated guest totals here.</p>
+                </div>
+            </section>
+
+            <!-- MASTER BUDGET -->
+            <section id="sec-budget" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Master Budget Planner (R)</h2>
+                    <p class="text-xs text-slate-500">Manage all wedding expense items in South African Rand.</p>
+                </div>
+            </section>
+
+            <!-- GUESTS -->
+            <section id="sec-guests" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-8 shadow-xs">
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Guest List Tracker</h2>
+                    <p class="text-xs text-slate-500">Track RSVPs, meal preferences, and seating assignments.</p>
+                </div>
+            </section>
+            
         </main>
     </div>
 
-    <!-- Navigation Drawer Control Script -->
+    <!-- Script to Handle Navigation & Drawer Toggle -->
     <script>
         function toggleMobileNav(forceState) {
             const nav = document.getElementById('mobileNav');
             const backdrop = document.getElementById('navBackdrop');
+            if (!nav || !backdrop) return;
+
             const isOpen = !nav.classList.contains('-translate-x-full');
             const shouldOpen = forceState !== undefined ? forceState : !isOpen;
 
@@ -337,12 +364,33 @@
             }
         }
 
-        // Auto close drawer when tab option is tapped on mobile
-        const originalSwitchTab = window.switchTab;
-        window.switchTab = function(tabId) {
-            if (typeof originalSwitchTab === 'function') {
-                originalSwitchTab(tabId);
+        function switchTab(tabId) {
+            // Hide all tab content sections
+            const tabSections = document.querySelectorAll('.tab-content');
+            tabSections.forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected tab content section
+            const targetSection = document.getElementById('sec-' + tabId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
             }
+
+            // Update active state on nav buttons
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('text-blush-600', 'bg-blush-50', 'font-semibold', 'shadow-xs');
+                btn.classList.add('text-slate-600');
+            });
+
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600');
+                activeBtn.classList.add('text-blush-600', 'bg-blush-50', 'font-semibold', 'shadow-xs');
+            }
+
+            // Auto-close drawer on mobile devices
             if (window.innerWidth < 768) {
                 toggleMobileNav(false);
             }
